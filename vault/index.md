@@ -1,0 +1,1 @@
+This note may go away or be absorbed into other notes over time. The purpose of this project is to create a simplified .hack style game since it is well defined and a series that I like. 

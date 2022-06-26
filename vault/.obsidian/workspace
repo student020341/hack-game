@@ -1,0 +1,103 @@
+{
+  "main": {
+    "id": "085c6aab5fa63f0b",
+    "type": "split",
+    "children": [
+      {
+        "id": "68690004ddf5f4ba",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "priorities.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c54a1c3ebc3eca06",
+    "type": "split",
+    "children": [
+      {
+        "id": "952e6ce3b96255bc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "463a0f4f77b55747",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "f3058c8685f76933",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "70b34c7537907216",
+    "type": "split",
+    "children": [
+      {
+        "id": "fa714432d7aa7e9a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7fe3e84da2f860cb",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "priorities.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "68690004ddf5f4ba",
+  "lastOpenFiles": [
+    "priorities.md",
+    "ideas/server transfer.md",
+    "ideas/map system.md",
+    "index.md",
+    "boards/server.md",
+    "boards/design.md",
+    "boards/client.md",
+    "download player data.md",
+    "ostritch/stuff.md",
+    "misc.md"
+  ]
+}
