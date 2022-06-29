@@ -7,11 +7,9 @@
         "id": "68690004ddf5f4ba",
         "type": "leaf",
         "state": {
-          "type": "markdown",
+          "type": "kanban",
           "state": {
-            "file": "priorities.md",
-            "mode": "source",
-            "source": false
+            "file": "boards/server.md"
           }
         }
       }
@@ -69,7 +67,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "priorities.md",
+                "file": "boards/server.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -89,11 +87,11 @@
   },
   "active": "68690004ddf5f4ba",
   "lastOpenFiles": [
-    "priorities.md",
-    "ideas/server transfer.md",
-    "ideas/map system.md",
-    "index.md",
     "boards/server.md",
+    "ideas/map system.md",
+    "ideas/server transfer.md",
+    "index.md",
+    "priorities.md",
     "boards/design.md",
     "boards/client.md",
     "download player data.md",

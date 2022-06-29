@@ -6,8 +6,6 @@ kanban-plugin: basic
 
 ## idea
 
-- [ ] player can register account
-- [ ] player can login/delete/transfer account
 - [ ] player can join a server town
 - [ ] player can create field/dungeon instances from server town gate
 - [ ] player can form groups with other players and or npcs
@@ -22,6 +20,9 @@ kanban-plugin: basic
 
 ## dev
 
+- [ ] player can register account
+- [ ] player can login/delete/transfer account
+- [ ] add web framework
 
 
 ## test
