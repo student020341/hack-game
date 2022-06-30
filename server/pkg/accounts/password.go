@@ -6,11 +6,19 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/argon2"
 )
+
+type AuthSession struct {
+	ID           string
+	Token        string
+	CreatedAt    time.Time
+	AccountID    string
+	LastAccessed time.Time
+}
 
 type params struct {
 	memory      uint32
@@ -18,36 +26,6 @@ type params struct {
 	parallelism uint8
 	saltLength  uint32
 	keyLength   uint32
-}
-
-func init() {
-	p := &params{
-		memory:      64 * 1024, // 64 MB
-		iterations:  3,
-		parallelism: 1,
-		saltLength:  16,
-		keyLength:   32,
-	}
-
-	salt, err := generateSalt(p.saltLength)
-	if err != nil {
-		return
-	}
-
-	encodedHash, err := generateHashFromPassword("somePassword", salt, p)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Hash + salt of the password:")
-	fmt.Println(encodedHash)
-
-	match, err := verifyPassword("somePassword", encodedHash)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("\nPassword verification success: %v\n", match)
 }
 
 func generateSalt(length uint32) ([]byte, error) {

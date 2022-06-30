@@ -16,6 +16,7 @@ kanban-plugin: basic
 - [ ] admin can send account reset link to players
 - [ ] players can transfer to other servers [[server transfer | note]]
 - [ ] a server can host multiple server towns with different layouts and functions
+- [ ] Expire logins?<br>- [ ] on login, expire old tokens
 
 
 ## dev

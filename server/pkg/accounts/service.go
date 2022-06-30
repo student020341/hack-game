@@ -1,12 +1,18 @@
 package accounts
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Account struct {
 	ID       string
-	Username string
+	Username string `gorm:"unique;not null"`
 	Salt     []byte
-	Password string
+	Password string `gorm:"not null"`
+	// 0 = admin, 1 = mod, 2 = user?
+	Level int
 }
 
 func CreateAccount(username string, pass string) (*Account, error) {
@@ -28,21 +34,39 @@ func CreateAccount(username string, pass string) (*Account, error) {
 		return nil, err
 	}
 
-	id, err := uuid.NewUUID()
-	if err != nil {
-		return nil, err
-	}
+	id := uuid.New()
 
 	acc := Account{
 		ID:       id.String(),
 		Username: username,
 		Salt:     salt,
 		Password: hash,
+		Level:    2,
 	}
 
 	return &acc, nil
 }
 
-func VerifyLogin(pass string, account Account) (bool, error) {
-	return verifyPassword(pass, account.Password)
+func Login(pass string, account Account) (*AuthSession, error) {
+	ok, err := verifyPassword(pass, account.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	if !ok {
+		return nil, nil
+	}
+
+	id := uuid.New()
+
+	token := uuid.New()
+
+	auth := AuthSession{
+		ID:        id.String(),
+		Token:     token.String(),
+		CreatedAt: time.Now(),
+		AccountID: account.ID,
+	}
+
+	return &auth, nil
 }

@@ -10,20 +10,31 @@ import (
 var _ = Describe("db test", func() {
 	It("create account and verify password", func() {
 
+		// create account
 		acc, err := accounts.CreateAccount("test", "cake")
 		Expect(err).To(Succeed())
 
 		DB.Create(&acc)
 
+		// grab account
 		var acc2 accounts.Account
-		DB.First(&acc2)
+		DB.First(&acc2, "ID = ?", acc.ID)
 
-		ok, err := accounts.VerifyLogin("cheese", acc2)
+		// test login
+		auth, err := accounts.Login("cheese", acc2)
 		Expect(err).To(Succeed())
-		Expect(ok).To(BeFalse())
+		Expect(auth).To(BeNil())
 
-		ok, err = accounts.VerifyLogin("cake", acc2)
+		auth, err = accounts.Login("cake", acc2)
 		Expect(err).To(Succeed())
-		Expect(ok).To(BeTrue())
+		Expect(auth).NotTo(BeNil())
+
+		DB.Create(auth)
+
+		// find account from session
+		var acc3 accounts.Account
+		DB.First(&acc3, "ID = ?", auth.AccountID)
+
+		Expect(acc3.ID).To(Equal(acc.ID))
 	})
 })
