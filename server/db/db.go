@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 
 	"server/pkg/accounts"
@@ -10,8 +9,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
-
-var DB *gorm.DB
 
 func NewDB(name string) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(name))
@@ -48,10 +45,4 @@ func NewDB(name string) *gorm.DB {
 	db.Logger = existingLogger
 
 	return db
-}
-
-func Init() {
-	DB = NewDB("test.db")
-
-	fmt.Println("connected to db")
 }

@@ -23,7 +23,7 @@ kanban-plugin: basic
 
 - [ ] player can register account
 - [ ] player can login/delete/transfer account
-- [ ] add web framework
+- [ ] integration test for server routes
 
 
 ## test
@@ -32,6 +32,7 @@ kanban-plugin: basic
 
 ## done
 
+- [ ] add web framework (echo)
 
 
 

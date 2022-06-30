@@ -3,7 +3,7 @@ package db_test
 import (
 	"testing"
 
-	"server/db"
+	dbPkg "server/db"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -15,10 +15,10 @@ func TestDB(t *testing.T) {
 	RunSpecs(t, "DB Suite")
 }
 
-var DB *gorm.DB
+var (
+	DB *gorm.DB
+)
 
 var _ = BeforeEach(func() {
-	var err error
-	DB = db.NewDB("file::memory:?cache=shared")
-	Expect(err).To(Succeed())
+	DB = dbPkg.NewDB("file::memory:?cache=shared")
 })
