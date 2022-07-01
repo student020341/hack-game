@@ -2,7 +2,7 @@ package server
 
 import (
 	"net/http"
-	"server/pkg/accounts"
+	"server/pkg/models"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -21,13 +21,13 @@ func (s *Server) AdminAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// check db
-		var authThing *accounts.AuthSession
+		var authThing *models.AuthSession
 		s.DB.Find(&authThing, "Token = ?", token)
 		if authThing == nil {
 			return vagueNegativeResposne()
 		}
 
-		var acc accounts.Account
+		var acc models.Account
 		s.DB.Find(&acc, "ID = ?", authThing.AccountID)
 		if acc.ID == "" || acc.Level != 0 {
 			return vagueNegativeResposne()
@@ -42,7 +42,7 @@ func (s *Server) UpdateAccessTime(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		token := c.Request().Header.Get("token")
 		if token != "" {
-			var authThing accounts.AuthSession
+			var authThing models.AuthSession
 			tx := s.DB.Find(&authThing, "Token = ?", token)
 			if tx.Error == nil && authThing.AccountID != "" {
 				authThing.LastAccessed = time.Now()

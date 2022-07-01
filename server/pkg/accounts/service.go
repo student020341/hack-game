@@ -3,19 +3,12 @@ package accounts
 import (
 	"time"
 
+	"server/pkg/models"
+
 	"github.com/google/uuid"
 )
 
-type Account struct {
-	ID       string
-	Username string `gorm:"unique;not null"`
-	Salt     []byte
-	Password string `gorm:"not null"`
-	// 0 = admin, 1 = mod, 2 = user?
-	Level int
-}
-
-func CreateAccount(username string, pass string) (*Account, error) {
+func CreateAccount(username string, pass string) (*models.Account, error) {
 	p := &params{
 		memory:      64 * 1024, // 64 MB
 		iterations:  3,
@@ -36,7 +29,7 @@ func CreateAccount(username string, pass string) (*Account, error) {
 
 	id := uuid.New()
 
-	acc := Account{
+	acc := models.Account{
 		ID:       id.String(),
 		Username: username,
 		Salt:     salt,
@@ -47,7 +40,7 @@ func CreateAccount(username string, pass string) (*Account, error) {
 	return &acc, nil
 }
 
-func Login(pass string, account Account) (*AuthSession, error) {
+func Login(pass string, account models.Account) (*models.AuthSession, error) {
 	ok, err := verifyPassword(pass, account.Password)
 	if err != nil {
 		return nil, err
@@ -61,7 +54,7 @@ func Login(pass string, account Account) (*AuthSession, error) {
 
 	token := uuid.New()
 
-	auth := AuthSession{
+	auth := models.AuthSession{
 		ID:        id.String(),
 		Token:     token.String(),
 		CreatedAt: time.Now(),

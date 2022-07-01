@@ -9,6 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"gorm.io/gorm/logger"
 )
 
 func TestIntegration(t *testing.T) {
@@ -25,6 +26,7 @@ var _ = BeforeEach(func() {
 	var err error
 	// db := dbPkg.NewDB("file::memory:?cache=shared")
 	db := dbPkg.NewDB(":memory:")
+	db.Logger = logger.Discard
 	s = server.MakeServer(db)
 	router := s.MakeRoutes()
 	httpServer = httptest.NewServer(router)

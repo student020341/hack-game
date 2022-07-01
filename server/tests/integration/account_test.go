@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	accountPkg "server/pkg/accounts"
+	"server/pkg/models"
 	testPkg "server/tests"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -33,7 +34,7 @@ var _ = Describe("account tests", func() {
 		Expect(*code).To(Equal(200))
 
 		// verify account exists
-		var acc accountPkg.Account
+		var acc models.Account
 		tx := s.DB.Take(&acc, "Username = ?", input.Username)
 		Expect(tx.Error).To(Succeed())
 		Expect(acc.Username).To(Equal(input.Username))
@@ -54,15 +55,15 @@ var _ = Describe("account tests", func() {
 		Expect(*code).To(Equal(200))
 
 		// verify log in token created
-		var auth accountPkg.AuthSession
+		var auth models.AuthSession
 		tx := s.DB.Take(&auth, "Token = ?", string(token))
 		Expect(tx.Error).To(Succeed())
 		Expect(auth.Token).To(Equal(string(token)))
 	})
 
-	FContext("logged in accounts", func() {
-		var acc *accountPkg.Account
-		var auth *accountPkg.AuthSession
+	Context("logged in accounts", func() {
+		var acc *models.Account
+		var auth *models.AuthSession
 		BeforeEach(func() {
 			// create user and session
 			var err error
@@ -85,7 +86,7 @@ var _ = Describe("account tests", func() {
 			Expect(*code).To(Equal(200))
 
 			// verify session deleted
-			tx := s.DB.Take(&accountPkg.AuthSession{}, "Token = ?", &auth.Token)
+			tx := s.DB.Take(&models.AuthSession{}, "Token = ?", &auth.Token)
 			Expect(tx.Error).To(Equal(gorm.ErrRecordNotFound))
 		})
 
@@ -100,7 +101,7 @@ var _ = Describe("account tests", func() {
 
 			// verify there are several sessions
 			var count int64
-			tx := s.DB.Find(&accountPkg.AuthSession{}).Count(&count)
+			tx := s.DB.Find(&models.AuthSession{}).Count(&count)
 			Expect(tx.Error).To(Succeed())
 			Expect(int(count)).To(Equal(6))
 
@@ -109,7 +110,7 @@ var _ = Describe("account tests", func() {
 			Expect(*code).To(Equal(200))
 
 			// verify there are 0 sessions
-			tx = s.DB.Find(&accountPkg.AuthSession{}).Count(&count)
+			tx = s.DB.Find(&models.AuthSession{}).Count(&count)
 			Expect(tx.Error).To(Succeed())
 			Expect(int(count)).To(Equal(0))
 		})

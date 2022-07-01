@@ -7,18 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"golang.org/x/crypto/argon2"
 )
-
-type AuthSession struct {
-	ID           string
-	Token        string
-	CreatedAt    time.Time
-	AccountID    string
-	LastAccessed time.Time
-}
 
 type params struct {
 	memory      uint32

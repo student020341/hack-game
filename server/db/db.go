@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"server/pkg/accounts"
+	"server/pkg/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -17,12 +18,12 @@ func NewDB(name string) *gorm.DB {
 	}
 
 	db.AutoMigrate(
-		&accounts.Account{},
-		&accounts.AuthSession{},
+		&models.Account{},
+		&models.AuthSession{},
 	)
 
 	// create admin account if one does not exist
-	var acc accounts.Account
+	var acc models.Account
 	existingLogger := db.Logger
 	db.Logger = logger.Discard
 	tx := db.Take(&acc, "Level = 0")

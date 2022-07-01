@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"server/pkg/accounts"
+	"server/pkg/models"
 
 	"github.com/labstack/echo/v4"
 	"github.com/nrfta/go-log"
@@ -51,7 +52,7 @@ func (s *Server) login(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "need username and password")
 	}
 
-	var acc accounts.Account
+	var acc models.Account
 	tx := s.DB.First(&acc, "Username = ?", *input.Username)
 	if tx.Error != nil {
 		return c.String(http.StatusInternalServerError, "failed to look up account: "+tx.Error.Error())
@@ -82,14 +83,14 @@ func (s *Server) logout(c echo.Context) error {
 
 	all := c.Request().URL.Query().Get("all")
 
-	var auth accounts.AuthSession
+	var auth models.AuthSession
 	tx := s.DB.Take(&auth, "Token = ?", token)
 	if tx.Error != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
 
 	if all == "1" {
-		tx = s.DB.Delete(&accounts.AuthSession{}, "account_id = ?", auth.AccountID)
+		tx = s.DB.Delete(&models.AuthSession{}, "account_id = ?", auth.AccountID)
 	} else {
 		tx = s.DB.Delete(&auth)
 	}
