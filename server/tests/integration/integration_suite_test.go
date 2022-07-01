@@ -23,7 +23,8 @@ var (
 
 var _ = BeforeEach(func() {
 	var err error
-	db := dbPkg.NewDB("file::memory:?cache=shared")
+	// db := dbPkg.NewDB("file::memory:?cache=shared")
+	db := dbPkg.NewDB(":memory:")
 	s = server.MakeServer(db)
 	router := s.MakeRoutes()
 	httpServer = httptest.NewServer(router)

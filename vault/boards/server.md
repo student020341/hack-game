@@ -17,13 +17,12 @@ kanban-plugin: basic
 - [ ] players can transfer to other servers [[server transfer | note]]
 - [ ] a server can host multiple server towns with different layouts and functions
 - [ ] Expire logins?<br>- [ ] on login, expire old tokens
+- [ ] move models to models package
 
 
 ## dev
 
-- [ ] player can register account
-- [ ] player can login/delete/transfer account
-- [ ] integration test for server routes
+- [ ] player can login/delete/transfer account<br>- [x] login<br>- [x] logout<br>- [ ] delete<br>- [ ] transfer
 
 
 ## test
@@ -32,6 +31,8 @@ kanban-plugin: basic
 
 ## done
 
+- [ ] player can register account
+- [ ] integration test for server routes
 - [ ] add web framework (echo)
 
 
