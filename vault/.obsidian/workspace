@@ -4,12 +4,12 @@
     "type": "split",
     "children": [
       {
-        "id": "68690004ddf5f4ba",
+        "id": "b98884ecbc5b6706",
         "type": "leaf",
         "state": {
           "type": "kanban",
           "state": {
-            "file": "boards/server.md"
+            "file": "boards/design.md"
           }
         }
       }
@@ -67,7 +67,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "boards/server.md",
+                "file": "boards/design.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -85,15 +85,15 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "68690004ddf5f4ba",
+  "active": "b98884ecbc5b6706",
   "lastOpenFiles": [
-    "boards/server.md",
+    "boards/design.md",
     "ideas/map system.md",
+    "boards/client.md",
+    "boards/server.md",
     "ideas/server transfer.md",
     "index.md",
     "priorities.md",
-    "boards/design.md",
-    "boards/client.md",
     "download player data.md",
     "ostritch/stuff.md",
     "misc.md"

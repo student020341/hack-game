@@ -12,7 +12,6 @@ kanban-plugin: basic
 - [ ] what does combat look like
 - [ ] determine client and server roles
 - [ ] should the server own and sync all npc/monster interactions?
-- [ ] [[map system | maps and npcs]]
 - [ ] players can teleport between set points and other players
 - [ ] admin NPCs help players with transfers
 - [ ] desired items for vendors and quests for all NPCs
@@ -21,6 +20,7 @@ kanban-plugin: basic
 
 ## dev
 
+- [ ] [[map system | maps and npcs]]<br>- [ ] decide map format<br>- [ ] decide npc format<br>- [ ] decide town hosting<br>- [ ] decide town/map chunking
 
 
 ## test

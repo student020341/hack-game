@@ -6,7 +6,6 @@ kanban-plugin: basic
 
 ## idea
 
-- [ ] decide technology (go vs rust vs c vs web)
 
 
 ## dev
@@ -19,6 +18,7 @@ kanban-plugin: basic
 
 ## done
 
+- [ ] ~~decide technology (go vs rust vs c vs web)~~<br>- server: go (echo, ginkgo)<br>- client: web
 
 
 
