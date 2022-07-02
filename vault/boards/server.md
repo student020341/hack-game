@@ -6,8 +6,6 @@ kanban-plugin: basic
 
 ## idea
 
-- [ ] player can register account
-- [ ] player can login/delete/transfer account
 - [ ] player can join a server town
 - [ ] player can create field/dungeon instances from server town gate
 - [ ] player can form groups with other players and or npcs
@@ -18,10 +16,12 @@ kanban-plugin: basic
 - [ ] admin can send account reset link to players
 - [ ] players can transfer to other servers [[server transfer | note]]
 - [ ] a server can host multiple server towns with different layouts and functions
+- [ ] Expire logins?<br>- [ ] determine how many sessions are ok<br>- [ ] on login, expire older tokens
 
 
 ## dev
 
+- [ ] player can login/delete/transfer account<br>- [x] login<br>- [x] logout<br>- [ ] delete<br>- [ ] transfer
 
 
 ## test
@@ -30,6 +30,10 @@ kanban-plugin: basic
 
 ## done
 
+- [ ] player can register account
+- [ ] integration test for server routes
+- [ ] add web framework (echo)
+- [ ] move models to models package
 
 
 

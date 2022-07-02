@@ -6,7 +6,6 @@ kanban-plugin: basic
 
 ## idea
 
-- [ ] decide technology (go vs rust vs c vs web)
 
 
 ## dev
