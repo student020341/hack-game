@@ -20,6 +20,8 @@ func NewDB(name string) *gorm.DB {
 	db.AutoMigrate(
 		&models.Account{},
 		&models.AuthSession{},
+		&models.Character{},
+		&models.Item{},
 	)
 
 	// create admin account if one does not exist

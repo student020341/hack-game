@@ -23,7 +23,7 @@ func (s *Server) MakeRoutes() *echo.Echo {
 
 	// "github.com/labstack/echo/v4/middleware"
 	// e.Use(middleware.Logger())
-	e.Use(s.UpdateAccessTime)
+	e.Use(s.SetAccountFromToken)
 
 	// admin stuff
 	e.GET("/api/accounts", s.listAccounts, s.AdminAuth)
@@ -31,8 +31,12 @@ func (s *Server) MakeRoutes() *echo.Echo {
 	// open
 	e.GET("/status", s.getStatus)
 	e.POST("/api/accounts", s.createAccount)
-	e.POST("/api/login", s.login)
+	e.POST("/api/login", s.login, s.UpdateAccessTime)
 	e.POST("/api/logout", s.logout)
+
+	// logged in
+	e.GET("/api/characters", s.getCharacter, s.AnyAuth)
+	e.POST("/api/characters", s.createCharacter, s.AnyAuth)
 
 	return e
 }

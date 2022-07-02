@@ -22,6 +22,7 @@ kanban-plugin: basic
 ## dev
 
 - [ ] player can login/delete/transfer account<br>- [x] login<br>- [x] logout<br>- [ ] delete<br>- [ ] transfer
+- [ ] character<br><br>- [ ] data model<br>- [ ] get<br>- [ ] create
 
 
 ## test

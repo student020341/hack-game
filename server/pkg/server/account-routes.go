@@ -7,6 +7,7 @@ import (
 	"server/pkg/accounts"
 	"server/pkg/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -40,6 +41,12 @@ func (s *Server) createAccount(c echo.Context) error {
 }
 
 func (s *Server) login(c echo.Context) error {
+	account, _ := c.Get("account").(*models.Account)
+	// skip login if user is already logged in
+	if account != nil {
+		return c.NoContent(http.StatusNoContent)
+	}
+
 	var input struct {
 		Username *string
 		Password *string
@@ -99,6 +106,48 @@ func (s *Server) logout(c echo.Context) error {
 	if tx.Error != nil {
 		fmt.Printf("failed to delete auth: %+v", tx.Error)
 		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+// TODO move these to character file?
+func (s *Server) getCharacter(c echo.Context) error {
+	// route should not be reachable without logging in due to middleware, panic
+	account := c.Get("account").(*models.Account)
+
+	var chars []models.Character
+	err := s.DB.Model(&account).Association("Characters").Find(&chars)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, chars)
+}
+
+func (s *Server) createCharacter(c echo.Context) error {
+	account := c.Get("account").(*models.Account)
+
+	var input struct {
+		Name *string
+	}
+
+	if err := c.Bind(&input); err != nil {
+		return c.String(http.StatusBadRequest, "invalid input")
+	}
+
+	if input.Name == nil {
+		return c.String(http.StatusBadRequest, "need character name")
+	}
+
+	// add character to account
+	character := models.Character{
+		ID:   uuid.New().String(),
+		Name: *input.Name,
+	}
+	err := s.DB.Model(&account).Association("Characters").Append(&character)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.NoContent(http.StatusOK)

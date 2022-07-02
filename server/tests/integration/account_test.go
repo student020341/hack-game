@@ -64,6 +64,9 @@ var _ = Describe("account tests", func() {
 	Context("logged in accounts", func() {
 		var acc *models.Account
 		var auth *models.AuthSession
+
+		var adminAcc *models.Account
+		var adminAuth *models.AuthSession
 		BeforeEach(func() {
 			// create user and session
 			var err error
@@ -77,6 +80,18 @@ var _ = Describe("account tests", func() {
 			tx := s.DB.Create(&acc)
 			Expect(tx.Error).To(Succeed())
 			tx = s.DB.Create(&auth)
+			Expect(tx.Error).To(Succeed())
+
+			// create admin user
+			adminAcc, err = accountPkg.CreateAccount("foo", "bar")
+			Expect(err).To(Succeed())
+			adminAuth, err = accountPkg.Login("bar", *adminAcc)
+			Expect(err).To(Succeed())
+
+			// persist
+			tx = s.DB.Create(&adminAcc)
+			Expect(tx.Error).To(Succeed())
+			tx = s.DB.Create(&adminAuth)
 			Expect(tx.Error).To(Succeed())
 		})
 
@@ -103,7 +118,7 @@ var _ = Describe("account tests", func() {
 			var count int64
 			tx := s.DB.Find(&models.AuthSession{}).Count(&count)
 			Expect(tx.Error).To(Succeed())
-			Expect(int(count)).To(Equal(6))
+			Expect(int(count)).To(Equal(7))
 
 			code, _, err := testPkg.SimplePost(httpServer.URL+"/api/logout?all=1", nil, &auth.Token)
 			Expect(err).To(Succeed())
@@ -112,11 +127,17 @@ var _ = Describe("account tests", func() {
 			// verify there are 0 sessions
 			tx = s.DB.Find(&models.AuthSession{}).Count(&count)
 			Expect(tx.Error).To(Succeed())
-			Expect(int(count)).To(Equal(0))
+			Expect(int(count)).To(Equal(1))
 		})
 
 		It("regular user cannot access account list", func() {
 			code, _, err := testPkg.SimpleGet(fmt.Sprintf("%s/api/accounts", httpServer.URL), nil)
+			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(401))
+		})
+
+		It("admin can access account list", func() {
+			code, _, err := testPkg.SimpleGet(fmt.Sprintf("%s/api/accounts", httpServer.URL), &adminAuth.Token)
 			Expect(err).To(Succeed())
 			Expect(*code).To(Equal(401))
 		})

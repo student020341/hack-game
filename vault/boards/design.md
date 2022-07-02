@@ -19,7 +19,7 @@ kanban-plugin: basic
 
 ## dev
 
-- [ ] [[map system | maps and npcs]]<br>- [ ] decide map format<br>- [ ] decide npc format<br>- [ ] decide town hosting<br>- [ ] decide town/map chunking
+- [ ] [[map system | maps and npcs]]<br>- [x] decide map format<br>- [ ] decide npc format<br>- [ ] decide town hosting<br>- [ ] decide town/map chunking
 
 
 ## test
