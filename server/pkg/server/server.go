@@ -1,15 +1,18 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	dbPkg "server/db"
+	"server/pkg/models"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 type Server struct {
-	DB *gorm.DB
+	DB    *gorm.DB
+	Towns []*models.Town
 }
 
 func (s *Server) Start() {
@@ -37,6 +40,13 @@ func (s *Server) MakeRoutes() *echo.Echo {
 	// logged in
 	e.GET("/api/characters", s.getCharacter, s.AnyAuth)
 	e.POST("/api/characters", s.createCharacter, s.AnyAuth)
+	e.DELETE("/api/characters", s.deleteCharacter, s.AnyAuth)
+
+	// server towns
+	e.GET("/api/servers", s.listTowns, s.AnyAuth)
+	e.POST("/api/servers/join", s.joinTown, s.AnyAuth)
+	e.GET("/api/servers/leave", s.leaveTown, s.AnyAuth)
+	e.GET("/api/servers/:id/players", s.listTownPlayers, s.AnyAuth)
 
 	return e
 }
@@ -49,8 +59,16 @@ func MakeServer(db *gorm.DB) Server {
 		DB = dbPkg.NewDB("test.db")
 	}
 
+	// load towns
+	var towns []*models.Town
+	tx := DB.Find(&towns)
+	if tx.Error != nil {
+		log.Fatalf("failed to load towns: %+v", tx.Error)
+	}
+
 	return Server{
-		DB: DB,
+		DB:    DB,
+		Towns: towns,
 	}
 }
 

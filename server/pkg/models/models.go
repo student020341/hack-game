@@ -5,8 +5,8 @@ import "time"
 type Account struct {
 	ID       string `gorm:"unique;not null"`
 	Username string `gorm:"unique;not null"`
-	Salt     []byte
-	Password string `gorm:"not null"`
+	Salt     []byte `json:"-"`
+	Password string `json:"-" gorm:"not null"`
 	// 0 = admin, 1 = mod, 2 = user?
 	Level      int
 	Characters []Character

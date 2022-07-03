@@ -42,16 +42,16 @@ func (s *Server) SetAccountFromToken(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		var auth *models.AuthSession
-		s.DB.Find(&auth, "Token = ?", token)
-		if auth == nil {
+		var auth models.AuthSession
+		s.DB.Take(&auth, "Token = ?", token)
+		if auth.AccountID == "" {
 			return next(c)
 		}
 
-		var acc *models.Account
-		s.DB.Find(&acc, "ID = ?", auth.AccountID)
-		if acc != nil {
-			c.Set("account", acc)
+		var acc models.Account
+		s.DB.Take(&acc, "ID = ?", auth.AccountID)
+		if acc.ID != "" {
+			c.Set("account", &acc)
 		}
 
 		return next(c)

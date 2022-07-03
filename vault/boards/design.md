@@ -15,6 +15,7 @@ kanban-plugin: basic
 - [ ] admin NPCs help players with transfers
 - [ ] desired items for vendors and quests for all NPCs
 - [ ] world/story quests?
+- [ ] figure out how server towns should be serialized (players, npcs, etc)
 
 
 ## dev

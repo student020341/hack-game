@@ -152,3 +152,39 @@ func (s *Server) createCharacter(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+func (s *Server) deleteCharacter(c echo.Context) error {
+	account := c.Get("account").(*models.Account)
+
+	var input struct {
+		ID *string `json:"id"`
+	}
+
+	err := c.Bind(&input)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "invalid input")
+	}
+
+	if input.ID == nil {
+		return c.String(http.StatusBadRequest, "input 'ID' is required")
+	}
+
+	// get
+	var char models.Character
+	err = s.DB.Model(&account).Association("Characters").Find(&char, "id = ?", *input.ID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "error retrieving character: "+err.Error())
+	}
+
+	if char.ID == "" {
+		return c.String(http.StatusInternalServerError, "unknown error retrieving character")
+	}
+
+	// delete
+	tx := s.DB.Delete(&char)
+	if tx.Error != nil {
+		return c.String(http.StatusInternalServerError, "error deleting character: "+tx.Error.Error())
+	}
+
+	return c.NoContent(http.StatusOK)
+}

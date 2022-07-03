@@ -21,12 +21,13 @@ kanban-plugin: basic
 
 ## dev
 
+- [ ] create instance versions of account and character models that are safe to share over network
 - [ ] player can login/delete/transfer account<br>- [x] login<br>- [x] logout<br>- [ ] delete<br>- [ ] transfer
-- [ ] character<br><br>- [ ] data model<br>- [ ] get<br>- [ ] create
 
 
 ## test
 
+- [ ] servers - player can...<br><br>- [ ] list<br>- [ ] join<br>- [ ] leave
 
 
 ## done
@@ -35,6 +36,7 @@ kanban-plugin: basic
 - [ ] integration test for server routes
 - [ ] add web framework (echo)
 - [ ] move models to models package
+- [ ] character<br><br>- [x] data model<br>- [x] get<br>- [x] create<br>- [x] delete
 
 
 

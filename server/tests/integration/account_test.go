@@ -1,12 +1,14 @@
 package integration_test
 
 import (
+	"encoding/json"
 	"fmt"
 
 	accountPkg "server/pkg/accounts"
 	"server/pkg/models"
 	testPkg "server/tests"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gorm.io/gorm"
@@ -67,6 +69,9 @@ var _ = Describe("account tests", func() {
 
 		var adminAcc *models.Account
 		var adminAuth *models.AuthSession
+
+		var char *models.Character
+		var adminChar *models.Character
 		BeforeEach(func() {
 			// create user and session
 			var err error
@@ -92,6 +97,23 @@ var _ = Describe("account tests", func() {
 			tx = s.DB.Create(&adminAcc)
 			Expect(tx.Error).To(Succeed())
 			tx = s.DB.Create(&adminAuth)
+			Expect(tx.Error).To(Succeed())
+
+			// create characters for users
+			char = &models.Character{
+				ID:        uuid.New().String(),
+				Name:      "testchar",
+				AccountID: acc.ID,
+			}
+			tx = s.DB.Create(&char)
+			Expect(tx.Error).To(Succeed())
+
+			adminChar = &models.Character{
+				ID:        uuid.New().String(),
+				Name:      "adchar",
+				AccountID: adminAcc.ID,
+			}
+			tx = s.DB.Create(&adminChar)
 			Expect(tx.Error).To(Succeed())
 		})
 
@@ -140,6 +162,55 @@ var _ = Describe("account tests", func() {
 			code, _, err := testPkg.SimpleGet(fmt.Sprintf("%s/api/accounts", httpServer.URL), &adminAuth.Token)
 			Expect(err).To(Succeed())
 			Expect(*code).To(Equal(401))
+		})
+
+		It("user can list their characters", func() {
+			code, body, err := testPkg.SimpleGet(httpServer.URL+"/api/characters", &auth.Token)
+			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(200))
+
+			// verify that users only get characters that belong to them
+			var charList []models.Character
+			err = json.Unmarshal(body, &charList)
+			Expect(err).To(Succeed())
+			Expect(len(charList)).To(Equal(1))
+			Expect(charList[0].Name).To(Equal("testchar"))
+		})
+
+		It("user can create a character", func() {
+			input := struct {
+				Name string
+			}{
+				Name: "Foo",
+			}
+			code, _, err := testPkg.SimplePost(httpServer.URL+"/api/characters", input, &auth.Token)
+			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(200))
+
+			// verify
+			var chars []models.Character
+			tx := s.DB.Find(&chars, "account_id = ?", acc.ID)
+			Expect(tx.Error).To(Succeed())
+			Expect(len(chars)).To(Equal(2))
+			Expect("Foo").To(BeElementOf([]string{chars[0].Name, chars[1].Name}))
+		})
+
+		It("user can delete a character", func() {
+			input := struct {
+				ID string
+			}{
+				ID: char.ID,
+			}
+			code, body, err := testPkg.SimpleDelete(httpServer.URL+"/api/characters", input, &auth.Token)
+			fmt.Println(string(body))
+			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(200))
+
+			//
+			var chars []models.Character
+			tx := s.DB.Find(&chars, "account_id = ?", acc.ID)
+			Expect(tx.Error).To(Succeed())
+			Expect(len(chars)).To(Equal(0))
 		})
 	}) // logged in accounts
 })
