@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"server/pkg/models"
 
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
 
@@ -76,6 +77,65 @@ func (s *Server) joinTown(c echo.Context) error {
 	}
 
 	return c.String(http.StatusInternalServerError, "failed to join town")
+}
+
+// reuse?
+var upgrader = websocket.Upgrader{}
+
+func (s *Server) joinTownSocket(c echo.Context) error {
+	// find which town the player is in
+	account := c.Get("account").(*models.Account)
+	existingPlayer, existingTown, _ := s.findPlayerInServers(account.ID)
+	if existingPlayer == nil {
+		return c.String(http.StatusBadRequest, "no player data to join, join a server town first")
+	}
+
+	// establish connection
+	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		return err
+	}
+	// defer ws.Close()
+
+	// store socket in player instance
+	for tIdx, t := range s.Towns {
+		if t.ID == existingTown.ID {
+			for pIdx, p := range t.Players {
+				if p.Account.ID == account.ID {
+					s.Towns[tIdx].Players[pIdx].Socket = ws
+				}
+			}
+		}
+	}
+
+	// greet player
+	err = ws.WriteMessage(websocket.TextMessage, []byte("hello"))
+	if err != nil {
+		return err
+	}
+
+	// for {
+	// 	// write
+	// 	err := ws.WriteMessage(websocket.TextMessage, []byte("hello"))
+	// 	if err != nil {
+	// 		if err == websocket.ErrCloseSent {
+	// 			break
+	// 		}
+	// 		c.Logger().Error(err)
+	// 	}
+
+	// 	// read
+	// 	_, msg, err := ws.ReadMessage()
+	// 	if err != nil {
+	// 		if err == websocket.ErrCloseSent || err.Error() == "websocket: close 1005 (no status)" {
+	// 			break
+	// 		}
+	// 		c.Logger().Error(err)
+	// 	}
+	// 	fmt.Printf("message: %s\n", msg)
+	// }
+
+	return nil
 }
 
 func (s *Server) leaveTown(c echo.Context) error {

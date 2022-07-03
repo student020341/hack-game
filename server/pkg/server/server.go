@@ -45,6 +45,7 @@ func (s *Server) MakeRoutes() *echo.Echo {
 	// server towns
 	e.GET("/api/servers", s.listTowns, s.AnyAuth)
 	e.POST("/api/servers/join", s.joinTown, s.AnyAuth)
+	e.GET("/api/servers/socket", s.joinTownSocket, s.AnyAuth)
 	e.GET("/api/servers/leave", s.leaveTown, s.AnyAuth)
 	e.GET("/api/servers/:id/players", s.listTownPlayers, s.AnyAuth)
 

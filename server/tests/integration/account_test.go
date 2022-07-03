@@ -3,12 +3,16 @@ package integration_test
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
+	"time"
 
 	accountPkg "server/pkg/accounts"
 	"server/pkg/models"
 	testPkg "server/tests"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gorm.io/gorm"
@@ -211,6 +215,40 @@ var _ = Describe("account tests", func() {
 			tx := s.DB.Find(&chars, "account_id = ?", acc.ID)
 			Expect(tx.Error).To(Succeed())
 			Expect(len(chars)).To(Equal(0))
+		})
+
+		FIt("user can join a server", func() {
+			var input struct {
+				TownID      string
+				CharacterID *string
+			}
+			input.CharacterID = &char.ID // player character
+			input.TownID = s.Towns[0].ID // default server town
+
+			// put player data in first server town
+			code, _, err := testPkg.SimplePost(httpServer.URL+"/api/servers/join", input, &auth.Token)
+			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(200))
+
+			// verify player in server
+			Expect(len(s.Towns[0].Players)).To(Equal(1))
+			Expect(s.Towns[0].Players[0].Account.ID).To(Equal(acc.ID))
+			Expect(s.Towns[0].Players[0].Socket).To(BeNil())
+
+			// player got a positive response, client should create a socket connection
+			uri := url.URL{Scheme: "ws", Host: httpServer.Listener.Addr().String(), Path: "/api/servers/socket"}
+			c, _, err := websocket.DefaultDialer.Dial(uri.String(), http.Header{"token": []string{auth.Token}})
+			Expect(err).To(Succeed())
+			defer c.Close()
+
+			Expect(s.Towns[0].Players[0].Socket).NotTo(BeNil())
+
+			// read a message from the server
+			_, message, err := c.ReadMessage()
+			Expect(err).To(Succeed())
+			Expect(string(message)).To(Equal("hello"))
+			err = c.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(time.Second*5))
+			Expect(err).To(Succeed())
 		})
 	}) // logged in accounts
 })

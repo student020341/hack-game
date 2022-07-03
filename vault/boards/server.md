@@ -23,6 +23,7 @@ kanban-plugin: basic
 
 - [ ] create instance versions of account and character models that are safe to share over network
 - [ ] player can login/delete/transfer account<br>- [x] login<br>- [x] logout<br>- [ ] delete<br>- [ ] transfer
+- [ ] server town websocket<br>- [x] basic socket connection<br>- [x] add socket to player<br>- [ ] send/rec in town
 
 
 ## test
