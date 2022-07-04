@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
 
 	accountPkg "server/pkg/accounts"
 	"server/pkg/models"
@@ -205,8 +204,7 @@ var _ = Describe("account tests", func() {
 			}{
 				ID: char.ID,
 			}
-			code, body, err := testPkg.SimpleDelete(httpServer.URL+"/api/characters", input, &auth.Token)
-			fmt.Println(string(body))
+			code, _, err := testPkg.SimpleDelete(httpServer.URL+"/api/characters", input, &auth.Token)
 			Expect(err).To(Succeed())
 			Expect(*code).To(Equal(200))
 
@@ -217,7 +215,34 @@ var _ = Describe("account tests", func() {
 			Expect(len(chars)).To(Equal(0))
 		})
 
-		FIt("user can join a server", func() {
+		It("user can list players in a server", func() {
+			// put players in server
+			s.Towns[0].Players = append(
+				s.Towns[0].Players,
+				models.Player{
+					Account:   *adminAcc,
+					Character: *adminChar,
+					Socket:    nil,
+				},
+				models.Player{
+					Account:   *acc,
+					Character: *char,
+					Socket:    nil,
+				},
+			)
+
+			code, body, err := testPkg.SimpleGet(fmt.Sprintf("%s/api/servers/%s/players", httpServer.URL, s.Towns[0].ID), &auth.Token)
+			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(200))
+
+			var players []models.Player
+			err = json.Unmarshal(body, &players)
+			Expect(err).To(Succeed())
+			Expect(len(players)).To(Equal(2))
+		})
+
+		// TODO move these tests to a different file
+		FIt("user can join and leave a server", func() {
 			var input struct {
 				TownID      string
 				CharacterID *string
@@ -247,8 +272,64 @@ var _ = Describe("account tests", func() {
 			_, message, err := c.ReadMessage()
 			Expect(err).To(Succeed())
 			Expect(string(message)).To(Equal("hello"))
-			err = c.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(time.Second*5))
+
+			// leave
+			code, _, err = testPkg.SimpleGet(httpServer.URL+"/api/servers/leave", &auth.Token)
 			Expect(err).To(Succeed())
+			Expect(*code).To(Equal(200))
+
+			// verify
+			for _, p := range s.Towns[0].Players {
+				Expect(p.Account.ID).NotTo(Equal(acc.ID))
+			}
+		})
+
+		It("users can chat", func() {
+			// put players in server
+			s.Towns[0].Players = append(
+				s.Towns[0].Players,
+				models.Player{
+					Account:   *adminAcc,
+					Character: *adminChar,
+					Socket:    nil,
+				},
+				models.Player{
+					Account:   *acc,
+					Character: *char,
+					Socket:    nil,
+				},
+			)
+
+			// socket clients
+			uri := url.URL{Scheme: "ws", Host: httpServer.Listener.Addr().String(), Path: "/api/servers/socket"}
+			adminClient, _, err := websocket.DefaultDialer.Dial(uri.String(), http.Header{"token": []string{adminAuth.Token}})
+			Expect(err).To(Succeed())
+			defer adminClient.Close()
+
+			userClient, _, err := websocket.DefaultDialer.Dial(uri.String(), http.Header{"token": []string{auth.Token}})
+			Expect(err).To(Succeed())
+			defer userClient.Close()
+
+			// verify
+			for _, t := range s.Towns {
+				for _, p := range t.Players {
+					Expect(p.Socket).NotTo(BeNil())
+				}
+			}
+
+			// chat
+			err = adminClient.WriteMessage(websocket.TextMessage, []byte("hello from admin"))
+			Expect(err).To(Succeed())
+
+			_, message, err := userClient.ReadMessage()
+			Expect(err).To(Succeed())
+			// read server welcome
+			Expect(string(message)).To(Equal("hello"))
+
+			// read message sent by other user
+			_, message, err = userClient.ReadMessage()
+			Expect(err).To(Succeed())
+			Expect(string(message)).To(Equal("hello from admin"))
 		})
 	}) // logged in accounts
 })

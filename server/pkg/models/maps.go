@@ -12,9 +12,16 @@ type Player struct {
 
 // server town
 type Town struct {
-	ID      string
-	Name    string
-	Players []Player `gorm:"-"`
+	ID             string
+	Name           string
+	Players        []Player           `gorm:"-"`
+	MessageChannel chan PlayerMessage `gorm:"-"`
 	// TODO NPCs
 	// TODO POIs
+}
+
+// message sent by player
+type PlayerMessage struct {
+	ID      string // account id
+	Message string
 }

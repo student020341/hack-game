@@ -28,7 +28,6 @@ kanban-plugin: basic
 
 ## test
 
-- [ ] servers - player can...<br><br>- [ ] list<br>- [ ] join<br>- [ ] leave
 
 
 ## done
@@ -38,6 +37,7 @@ kanban-plugin: basic
 - [ ] add web framework (echo)
 - [ ] move models to models package
 - [ ] character<br><br>- [x] data model<br>- [x] get<br>- [x] create<br>- [x] delete
+- [ ] servers - player can...<br><br>- [x] list<br>- [x] join<br>- [x] leave<br>- [x] chat
 
 
 

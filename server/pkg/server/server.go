@@ -6,6 +6,7 @@ import (
 	dbPkg "server/db"
 	"server/pkg/models"
 
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -65,6 +66,23 @@ func MakeServer(db *gorm.DB) Server {
 	tx := DB.Find(&towns)
 	if tx.Error != nil {
 		log.Fatalf("failed to load towns: %+v", tx.Error)
+	}
+
+	// TODO should this be here?
+	// handle sockets
+	for _, t := range towns {
+		// initialize channels
+		t.MessageChannel = make(chan models.PlayerMessage)
+		go func(town *models.Town) {
+			for {
+				msg := <-town.MessageChannel
+				for _, p := range town.Players {
+					if p.Account.ID != msg.ID {
+						p.Socket.WriteMessage(websocket.TextMessage, []byte(msg.Message))
+					}
+				}
+			}
+		}(t)
 	}
 
 	return Server{

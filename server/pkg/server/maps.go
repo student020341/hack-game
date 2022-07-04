@@ -61,7 +61,6 @@ func (s *Server) joinTown(c echo.Context) error {
 	// get town & add user to server collection of players
 	for _, town := range s.Towns {
 		if town.ID == *input.TownID {
-			// TODO create socket or something, checking if player is in server town players
 			// ensure player not already in town
 			for _, player := range town.Players {
 				if player.Account.ID == account.ID {
@@ -95,7 +94,6 @@ func (s *Server) joinTownSocket(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	// defer ws.Close()
 
 	// store socket in player instance
 	for tIdx, t := range s.Towns {
@@ -103,6 +101,8 @@ func (s *Server) joinTownSocket(c echo.Context) error {
 			for pIdx, p := range t.Players {
 				if p.Account.ID == account.ID {
 					s.Towns[tIdx].Players[pIdx].Socket = ws
+					// start handling socket
+					go s.handlePlayerSocket(ws, t.ID, p.Account.ID)
 				}
 			}
 		}
@@ -114,27 +114,6 @@ func (s *Server) joinTownSocket(c echo.Context) error {
 		return err
 	}
 
-	// for {
-	// 	// write
-	// 	err := ws.WriteMessage(websocket.TextMessage, []byte("hello"))
-	// 	if err != nil {
-	// 		if err == websocket.ErrCloseSent {
-	// 			break
-	// 		}
-	// 		c.Logger().Error(err)
-	// 	}
-
-	// 	// read
-	// 	_, msg, err := ws.ReadMessage()
-	// 	if err != nil {
-	// 		if err == websocket.ErrCloseSent || err.Error() == "websocket: close 1005 (no status)" {
-	// 			break
-	// 		}
-	// 		c.Logger().Error(err)
-	// 	}
-	// 	fmt.Printf("message: %s\n", msg)
-	// }
-
 	return nil
 }
 
@@ -144,6 +123,12 @@ func (s *Server) leaveTown(c echo.Context) error {
 	// find account
 	_, t, index := s.findPlayerInServers(account.ID)
 	if t != nil {
+		// leave & disconnect
+		if t.Players[*index].Socket != nil {
+			t.Players[*index].Socket.Close()
+			t.Players[*index].Socket = nil
+		}
+
 		// remove account from town
 		t.Players = append(t.Players[:*index], t.Players[*index+1:]...)
 		return c.NoContent(http.StatusOK)

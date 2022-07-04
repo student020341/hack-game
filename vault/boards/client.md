@@ -14,6 +14,7 @@ kanban-plugin: basic
 
 ## dev
 
+- [ ] basics<br>- [ ] register account<br>- [ ] login<br>- [ ] create character<br>- [ ] select world<br>- [ ] chat
 
 
 ## test
