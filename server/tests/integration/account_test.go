@@ -242,7 +242,7 @@ var _ = Describe("account tests", func() {
 		})
 
 		// TODO move these tests to a different file
-		FIt("user can join and leave a server", func() {
+		It("user can join and leave a server", func() {
 			var input struct {
 				TownID      string
 				CharacterID *string

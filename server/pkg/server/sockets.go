@@ -25,6 +25,7 @@ func (s *Server) handlePlayerSocket(ws *websocket.Conn, townID string, playerID 
 		_, msg, err := ws.ReadMessage()
 		if err != nil {
 			// TODO handle errors
+			// TODO use logger instead
 			fmt.Printf("player %s socket error: %s\n", playerID, err.Error())
 			break
 		}
