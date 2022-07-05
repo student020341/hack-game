@@ -6,6 +6,7 @@ import (
 	"server/pkg/accounts"
 	"server/pkg/models"
 
+	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -20,6 +21,8 @@ func NewDB(name string) *gorm.DB {
 	db.AutoMigrate(
 		&models.Account{},
 		&models.AuthSession{},
+		&models.Character{},
+		&models.Town{},
 	)
 
 	// create admin account if one does not exist
@@ -40,6 +43,25 @@ func NewDB(name string) *gorm.DB {
 			}
 		} else {
 			log.Fatalf("error taking account on db init: %+v", tx.Error)
+		}
+	}
+
+	// create default town if there are none
+	var town models.Town
+	tx = db.Take(&town)
+	if tx.Error != nil {
+		if tx.Error == gorm.ErrRecordNotFound {
+			// TODO
+			town := models.Town{
+				ID:   uuid.New().String(),
+				Name: "Test Town",
+			}
+			tx = db.Create(&town)
+			if tx.Error != nil {
+				log.Fatalf("failed to save initial server town: %+v", tx.Error)
+			}
+		} else {
+			log.Fatalf("error retrieving server towns: %+v", tx.Error)
 		}
 	}
 

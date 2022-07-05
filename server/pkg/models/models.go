@@ -3,18 +3,33 @@ package models
 import "time"
 
 type Account struct {
-	ID       string
+	ID       string `gorm:"unique;not null"`
 	Username string `gorm:"unique;not null"`
-	Salt     []byte
-	Password string `gorm:"not null"`
+	Salt     []byte `json:"-"`
+	Password string `json:"-" gorm:"not null"`
 	// 0 = admin, 1 = mod, 2 = user?
-	Level int
+	Level      int
+	Characters []Character
 }
 
 type AuthSession struct {
-	ID           string
-	Token        string
+	ID           string `gorm:"not null"`
+	Token        string `gorm:"not null"`
 	CreatedAt    time.Time
-	AccountID    string
+	AccountID    string `gorm:"not null"`
 	LastAccessed time.Time
+}
+
+type Character struct {
+	ID        string `gorm:"not null"`
+	AccountID string
+	Name      string
+	// TODO level/exp?
+	Inventory []Item
+}
+
+type Item struct {
+	ID          string `gorm:"not null"`
+	Something   string // TODO
+	CharacterID string
 }

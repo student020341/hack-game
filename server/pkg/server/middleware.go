@@ -11,26 +11,47 @@ import (
 // enforce login is admin
 func (s *Server) AdminAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		account, _ := c.Get("account").(*models.Account)
+
+		if account == nil || account.Level != 0 {
+			return c.NoContent(http.StatusUnauthorized)
+		}
+
+		return next(c)
+	}
+}
+
+// ensure some user is logged in
+func (s *Server) AnyAuth(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		account, _ := c.Get("account").(*models.Account)
+
+		if account == nil || account.ID == "" {
+			return c.NoContent(http.StatusUnauthorized)
+		}
+
+		return next(c)
+	}
+}
+
+// looks up account if token header is present and stores account in context
+func (s *Server) SetAccountFromToken(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
 		token := c.Request().Header.Get("token")
-		vagueNegativeResposne := func() error {
-			return c.JSON(http.StatusUnauthorized, map[string]string{"message": "auth :)"})
-		}
-
 		if token == "" {
-			return vagueNegativeResposne()
+			return next(c)
 		}
 
-		// check db
-		var authThing *models.AuthSession
-		s.DB.Find(&authThing, "Token = ?", token)
-		if authThing == nil {
-			return vagueNegativeResposne()
+		var auth models.AuthSession
+		s.DB.Take(&auth, "Token = ?", token)
+		if auth.AccountID == "" {
+			return next(c)
 		}
 
 		var acc models.Account
-		s.DB.Find(&acc, "ID = ?", authThing.AccountID)
-		if acc.ID == "" || acc.Level != 0 {
-			return vagueNegativeResposne()
+		s.DB.Take(&acc, "ID = ?", auth.AccountID)
+		if acc.ID != "" {
+			c.Set("account", &acc)
 		}
 
 		return next(c)

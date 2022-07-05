@@ -9,7 +9,7 @@
         "state": {
           "type": "kanban",
           "state": {
-            "file": "boards/design.md"
+            "file": "boards/client.md"
           }
         }
       }
@@ -67,7 +67,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "boards/design.md",
+                "file": "boards/client.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -87,10 +87,10 @@
   },
   "active": "b98884ecbc5b6706",
   "lastOpenFiles": [
-    "boards/design.md",
-    "ideas/map system.md",
     "boards/client.md",
     "boards/server.md",
+    "boards/design.md",
+    "ideas/map system.md",
     "ideas/server transfer.md",
     "index.md",
     "priorities.md",

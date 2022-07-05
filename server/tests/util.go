@@ -65,3 +65,38 @@ func SimplePost(path string, iface interface{}, token *string) (*int, []byte, er
 	defer res.Body.Close()
 	return &res.StatusCode, body, nil
 }
+
+// TODO should probably become something method can be passed into
+func SimpleDelete(path string, iface interface{}, token *string) (*int, []byte, error) {
+	// post body
+	var asJson []byte
+	if iface != nil {
+		var err error
+		asJson, err = json.MarshalIndent(iface, "", "  ")
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	// for headers
+	client := http.DefaultClient
+	req, err := http.NewRequest("DELETE", path, bytes.NewBuffer(asJson))
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if token != nil {
+		req.Header.Set("token", *token)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, nil, err
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer res.Body.Close()
+	return &res.StatusCode, body, nil
+}

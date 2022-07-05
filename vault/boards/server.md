@@ -16,12 +16,14 @@ kanban-plugin: basic
 - [ ] admin can send account reset link to players
 - [ ] players can transfer to other servers [[server transfer | note]]
 - [ ] a server can host multiple server towns with different layouts and functions
-- [ ] Expire logins?<br>- [ ] on login, expire old tokens
+- [ ] Expire logins?<br>- [ ] determine how many sessions are ok<br>- [ ] on login, expire older tokens
 
 
 ## dev
 
+- [ ] create instance versions of account and character models that are safe to share over network
 - [ ] player can login/delete/transfer account<br>- [x] login<br>- [x] logout<br>- [ ] delete<br>- [ ] transfer
+- [ ] server town websocket<br>- [x] basic socket connection<br>- [x] add socket to player<br>- [ ] send/rec in town
 
 
 ## test
@@ -34,6 +36,8 @@ kanban-plugin: basic
 - [ ] integration test for server routes
 - [ ] add web framework (echo)
 - [ ] move models to models package
+- [ ] character<br><br>- [x] data model<br>- [x] get<br>- [x] create<br>- [x] delete
+- [ ] servers - player can...<br><br>- [x] list<br>- [x] join<br>- [x] leave<br>- [x] chat
 
 
 

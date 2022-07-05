@@ -1,12 +1,14 @@
 package server
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"server/pkg/accounts"
 	"server/pkg/models"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/nrfta/go-log"
 )
 
 func (s *Server) createAccount(c echo.Context) error {
@@ -25,13 +27,13 @@ func (s *Server) createAccount(c echo.Context) error {
 
 	acc, err := accounts.CreateAccount(*input.Username, *input.Password)
 	if err != nil {
-		log.Errorf("error creating account: %+v", err)
+		log.Printf("error creating account: %+v", err)
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	tx := s.DB.Create(&acc)
 	if tx.Error != nil {
-		log.Errorf("error saving account: %+v", tx.Error)
+		log.Printf("error saving account: %+v", tx.Error)
 		return c.String(http.StatusInternalServerError, tx.Error.Error())
 	}
 
@@ -39,6 +41,12 @@ func (s *Server) createAccount(c echo.Context) error {
 }
 
 func (s *Server) login(c echo.Context) error {
+	account, _ := c.Get("account").(*models.Account)
+	// skip login if user is already logged in
+	if account != nil {
+		return c.NoContent(http.StatusNoContent)
+	}
+
 	var input struct {
 		Username *string
 		Password *string
@@ -96,8 +104,86 @@ func (s *Server) logout(c echo.Context) error {
 	}
 
 	if tx.Error != nil {
-		log.Errorf("failed to delete auth: %+v", tx.Error)
+		fmt.Printf("failed to delete auth: %+v", tx.Error)
 		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+// TODO move these to character file?
+func (s *Server) getCharacter(c echo.Context) error {
+	// route should not be reachable without logging in due to middleware, panic
+	account := c.Get("account").(*models.Account)
+
+	var chars []models.Character
+	err := s.DB.Model(&account).Association("Characters").Find(&chars)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, chars)
+}
+
+func (s *Server) createCharacter(c echo.Context) error {
+	account := c.Get("account").(*models.Account)
+
+	var input struct {
+		Name *string
+	}
+
+	if err := c.Bind(&input); err != nil {
+		return c.String(http.StatusBadRequest, "invalid input")
+	}
+
+	if input.Name == nil {
+		return c.String(http.StatusBadRequest, "need character name")
+	}
+
+	// add character to account
+	character := models.Character{
+		ID:   uuid.New().String(),
+		Name: *input.Name,
+	}
+	err := s.DB.Model(&account).Association("Characters").Append(&character)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func (s *Server) deleteCharacter(c echo.Context) error {
+	account := c.Get("account").(*models.Account)
+
+	var input struct {
+		ID *string `json:"id"`
+	}
+
+	err := c.Bind(&input)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "invalid input")
+	}
+
+	if input.ID == nil {
+		return c.String(http.StatusBadRequest, "input 'ID' is required")
+	}
+
+	// get
+	var char models.Character
+	err = s.DB.Model(&account).Association("Characters").Find(&char, "id = ?", *input.ID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "error retrieving character: "+err.Error())
+	}
+
+	if char.ID == "" {
+		return c.String(http.StatusInternalServerError, "unknown error retrieving character")
+	}
+
+	// delete
+	tx := s.DB.Delete(&char)
+	if tx.Error != nil {
+		return c.String(http.StatusInternalServerError, "error deleting character: "+tx.Error.Error())
 	}
 
 	return c.NoContent(http.StatusOK)
