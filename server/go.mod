@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/gorilla/websocket v1.5.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.19.0
