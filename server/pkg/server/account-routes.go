@@ -25,6 +25,14 @@ func (s *Server) createAccount(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "need username and password")
 	}
 
+	if len(*input.Username) == 0 {
+		return c.String(http.StatusBadRequest, "username cannot be blank")
+	}
+
+	if len(*input.Password) == 0 {
+		return c.String(http.StatusBadRequest, "password cannot be blank")
+	}
+
 	acc, err := accounts.CreateAccount(*input.Username, *input.Password)
 	if err != nil {
 		log.Printf("error creating account: %+v", err)
@@ -37,7 +45,12 @@ func (s *Server) createAccount(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, tx.Error.Error())
 	}
 
-	return c.NoContent(http.StatusOK)
+	auth, err := accounts.Login(*input.Password, *acc)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "account created but failed to login")
+	}
+
+	return c.String(http.StatusOK, auth.Token)
 }
 
 func (s *Server) login(c echo.Context) error {

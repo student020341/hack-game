@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +28,7 @@ func (s *Server) MakeRoutes() *echo.Echo {
 
 	// "github.com/labstack/echo/v4/middleware"
 	// e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
 	e.Use(s.SetAccountFromToken)
 
 	// admin stuff
