@@ -14,8 +14,8 @@ type Player struct {
 type Town struct {
 	ID             string
 	Name           string
-	Players        []Player           `gorm:"-"`
-	MessageChannel chan PlayerMessage `gorm:"-"`
+	Players        []Player           `json:"-" gorm:"-"`
+	MessageChannel chan PlayerMessage `json:"-" gorm:"-"`
 	// TODO NPCs
 	// TODO POIs
 }

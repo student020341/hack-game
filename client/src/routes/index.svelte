@@ -1,13 +1,12 @@
-
 <script>
-  import {env} from "../lib/env";
-  import {accountToken} from "../lib/stores";
-  import {goto} from "$app/navigation";
-import { onMount } from "svelte";
+  import { env } from "../lib/env";
+  import { accountToken } from "../lib/stores";
+  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
 
   let user = {
     username: "",
-    password: ""
+    password: "",
   };
 
   let status = "checking...";
@@ -18,13 +17,18 @@ import { onMount } from "svelte";
     }
   });
 
-  fetch(`${env.server}/status`).then(res => {
-    switch(res.status) {
-      case 200: status = "Online"; break;
-      default: status = "Error"; break;
-    }
-  })
-    .catch(err => {
+  fetch(`${env.server}/status`)
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          status = "Online";
+          break;
+        default:
+          status = "Error";
+          break;
+      }
+    })
+    .catch((err) => {
       console.error(err);
       status = "Offline";
     });
@@ -32,8 +36,8 @@ import { onMount } from "svelte";
   const login = () => {
     fetch(`${env.server}/api/login`, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(user)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
     }).then(async (res) => {
       const text = await res.text();
       if (res.status == 200) {
@@ -42,30 +46,28 @@ import { onMount } from "svelte";
       } else if (res.status == 404) {
         alert("incorrect password");
       } else {
-        alert("login eror: "+text);
+        alert("login eror: " + text);
       }
-    })
+    });
   };
 
   const register = () => {
     fetch(`${env.server}/api/accounts`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(user)
-    })
-      .then(async (res) => {
-        let text = await res.text();
-        if (res.status == 200) {
-          accountToken.set(text);
-          goto("/characters");
-        } else {
-          alert("failed to register account: "+text);
-        }
-      });
+      body: JSON.stringify(user),
+    }).then(async (res) => {
+      let text = await res.text();
+      if (res.status == 200) {
+        accountToken.set(text);
+        goto("/characters");
+      } else {
+        alert("failed to register account: " + text);
+      }
+    });
   };
-
 </script>
 
 <div>

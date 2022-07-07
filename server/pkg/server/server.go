@@ -26,8 +26,7 @@ func (s *Server) Start() {
 func (s *Server) MakeRoutes() *echo.Echo {
 	e := echo.New()
 
-	// "github.com/labstack/echo/v4/middleware"
-	// e.Use(middleware.Logger())
+	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 	e.Use(s.SetAccountFromToken)
 

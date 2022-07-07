@@ -14,7 +14,9 @@ kanban-plugin: basic
 
 ## dev
 
-- [ ] basics<br>- [x] register account<br>- [x] login<br>- [ ] create character<br>- [ ] list characters<br>- [ ] list worlds<br>- [ ] join world<br>- [ ] chat
+- [ ] basics<br>- [x] register account<br>- [x] login<br>- [x] create character<br>- [x] list characters<br>- [x] list worlds<br>- [ ] join world<br>- [ ] chat
+- [ ] [[client api controller]]
+- [ ] create boilerplate stuff to support api file
 
 
 ## done

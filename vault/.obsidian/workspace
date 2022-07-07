@@ -88,14 +88,14 @@
   "active": "b98884ecbc5b6706",
   "lastOpenFiles": [
     "boards/client.md",
-    "boards/server.md",
     "boards/design.md",
+    "ideas/client api controller.md",
+    "boards/server.md",
     "ideas/map system.md",
     "ideas/server transfer.md",
     "index.md",
     "priorities.md",
     "download player data.md",
-    "ostritch/stuff.md",
-    "misc.md"
+    "ostritch/stuff.md"
   ]
 }
